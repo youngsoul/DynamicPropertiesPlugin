@@ -6,7 +6,6 @@ class DynamicProperty {
     String propValue
     String propType = "String"
 
-// apid    String ownerApId
     Long ownerId
     static constraints = {
     }

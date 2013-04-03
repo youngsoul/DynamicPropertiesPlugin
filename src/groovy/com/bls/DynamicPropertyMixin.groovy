@@ -77,7 +77,7 @@ class DynamicPropertyMixin {
                 eq('ownerId', id)
             }
         }
-        
+
         return propNames
 
     }
