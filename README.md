@@ -9,6 +9,7 @@ definition.
 Usage:
 
 @Mixin(com.bls.DynamicPropertyMixin)
+
 class Thing {
 
     String name
