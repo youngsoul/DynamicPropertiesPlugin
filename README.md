@@ -7,7 +7,9 @@ Mixin that will add the capability to add properties to a domain object that wer
 definition.
 
 Usage:
+
 @Mixin(com.bls.DynamicPropertyMixin)
+
 class Thing {
 
     String name
