@@ -20,20 +20,19 @@ class DynamicPropertyMixin {
 
 
     def propertyMissing(String name ) {
-        ObjectMapper objectMapper = new ObjectMapper()
         XStream xs = new XStream()
+
+        // see if we have already read/saved this property value
         if( !_cachedProperties.containsKey(name) ) {
-// apid            DynamicProperty dynamicProperty = DynamicProperty.findByOwnerApIdAndPropName(apId, name)
+            // if not create new one and save it to db
             DynamicProperty dynamicProperty = DynamicProperty.findByOwnerIdAndPropName(id, name)
 
             // this could be null if the user is asking for a non-existent property
             if (dynamicProperty) {
-                //def propValue = objectMapper.readValue(dynamicProperty.propValue, Class.forName(dynamicProperty.propType))
                 def propValue = xs.fromXML(dynamicProperty.propValue)
                 _cachedProperties[name] = propValue
             }
         }
-        println "Property missing: $name has value: ${_cachedProperties[name].toString()}"
         return _cachedProperties[name]
     }
 
@@ -46,25 +45,21 @@ class DynamicPropertyMixin {
 
     void deleteDynamicProperties() {
         DynamicProperty.withNewSession {
-// apid            DynamicProperty.executeUpdate("delete from DynamicProperty a where a.ownerApId = :ownerapid", [ownerapid: apId])
             DynamicProperty.executeUpdate("delete from DynamicProperty a where a.ownerId = :ownerId", [ownerId: id])
         }
 
     }
     void updatedDynamicProperties() {
         DynamicProperty.withNewSession {
-//            ObjectMapper objectMapper = new ObjectMapper()
             XStream xs = new XStream()
             _unSavedProperties.each { k, v ->
-// apid                DynamicProperty dynamicProperty = DynamicProperty.findByOwnerApIdAndPropName(apId, k)
 
 
                 DynamicProperty dynamicProperty = DynamicProperty.findByOwnerIdAndPropName(id, k)
                 if (!dynamicProperty) {
-// apid                    dynamicProperty = new DynamicProperty(propName: k, propType: v.getClass().name, ownerApId: apId)
                     dynamicProperty = new DynamicProperty(propName: k, propType: v.getClass().name, ownerId: id)
                 }
-                dynamicProperty.propValue = xs.toXML(v)  //objectMapper.writeValueAsString(v)
+                dynamicProperty.propValue = xs.toXML(v)
 
                 dynamicProperty.save(flush:true, failOnError: true)
             }
@@ -73,15 +68,18 @@ class DynamicPropertyMixin {
     }
 
     List<String> getAllDynamicPropertyNames() {
-        def propNames = DynamicProperty.withCriteria {
-            projections {
-                property('propName')
+        List propNames = []
+        DynamicProperty.withNewSession {
+            propNames = DynamicProperty.withCriteria {
+                projections {
+                    property('propName')
+                }
+                eq('ownerId', id)
             }
-// apid            eq('ownerApId', apId)
-            eq('ownerId', id)
         }
-
+        
         return propNames
+
     }
 
 }

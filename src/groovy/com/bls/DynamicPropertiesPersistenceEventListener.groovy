@@ -13,10 +13,7 @@ import org.grails.datastore.mapping.engine.event.PreUpdateEvent
 import org.springframework.context.ApplicationEvent
 
 /**
- * Created by IntelliJ IDEA.
  * User: youngsoul
- * Date: 2/15/13
- * Time: 3:34 PM
  * applicationContext.getBeansOfType(Datastore)
  */
 class DynamicPropertiesPersistenceEventListener extends AbstractPersistenceEventListener {
@@ -35,7 +32,6 @@ class DynamicPropertiesPersistenceEventListener extends AbstractPersistenceEvent
 
         def thing = event.entityObject
 
-        println "onPersistenceEvent ${thing.class.getName()}"
         // see:  https://github.com/grails/grails-core/blob/master/grails-core/src/main/groovy/org/codehaus/groovy/grails/compiler/injection/MixinTransformation.java
         // line 85 for the injection of this property.. very dependent upon the grails.util.Mixin implementation
         //def isDynamicPropertyAware = thing.metaClass.hasProperty(thing, '$dynamicPropertyMixin')
