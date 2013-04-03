@@ -36,9 +36,13 @@ class DynamicPropertyMixin {
         return _cachedProperties[name]
     }
 
+    /**
+     *
+     * @param name
+     * @param value
+     * @return
+     */
     def propertyMissing(String name, Object value) {
-        println "Set missing property: $name with value ${value?.toString()}"
-
         _unSavedProperties[name] = value
         _cachedProperties[name] = value
     }
