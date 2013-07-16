@@ -18,7 +18,15 @@ class DynamicPropertyMixin {
     // this will NOT BE PERSISTED
     transient boolean isDynamicPropertyAware = true
 
-
+  /**
+   * Method is execute for a read of a missing property.
+   * This method will first check the local cache of property values before executing a query.
+   *
+   * Usage:  def x = myobject.unknownprop
+   *
+   * @param name property name to get the value for
+   * @return value of the property name or null if it does not exist
+   */
     def propertyMissing(String name ) {
         XStream xs = new XStream()
 
@@ -37,22 +45,39 @@ class DynamicPropertyMixin {
     }
 
     /**
+     * Method is executed for a write of a missing property.
+     * myobject.unknownproperty = "some value"
      *
-     * @param name
-     * @param value
-     * @return
+     * @param name name of the property
+     * @param value of the property
+     * @return value
      */
     def propertyMissing(String name, Object value) {
         _unSavedProperties[name] = value
         _cachedProperties[name] = value
     }
 
+  /**
+   * Delete all of the dynamic properties associated with the host object.
+   *
+   * This method is used by the DynamicPropertiesPersistenceEventHandler to delete any DynamicProperties
+   * associated with the host object.
+   */
     void deleteDynamicProperties() {
         DynamicProperty.withNewSession {
             DynamicProperty.executeUpdate("delete from DynamicProperty a where a.ownerId = :ownerId", [ownerId: id])
         }
 
     }
+
+  /**
+   * Save or update any dynamic properties
+   *
+   * Method is used by the DynamicPropertiesPeristenceEventHandler to save any unsaved DynamicProperties AFTER
+   * the host object has been saved.
+   *
+   *
+   */
     void updatedDynamicProperties() {
         DynamicProperty.withNewSession {
             XStream xs = new XStream()
@@ -71,6 +96,11 @@ class DynamicPropertyMixin {
         _unSavedProperties = [:]
     }
 
+  /**
+   * Return a list of all of the Dynamic properties associated with the host object.
+   *
+   * @return List of property names
+   */
     List<String> getAllDynamicPropertyNames() {
         List propNames = []
         DynamicProperty.withNewSession {

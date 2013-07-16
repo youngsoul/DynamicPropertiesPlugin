@@ -26,9 +26,14 @@ class DynamicPropertiesPersistenceEventListener extends AbstractPersistenceEvent
         super(datastore)
     }
 
+  /**
+   * Upon PostInsert or PostDelete save the dynamic properties.  Upon PostDelete, delete any associated dynamic properties
+   * 
+   * @param event
+   */
     @Override
     protected void onPersistenceEvent(AbstractPersistenceEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
 
         def thing = event.entityObject
 
